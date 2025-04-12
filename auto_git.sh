@@ -41,6 +41,24 @@ divider="───────────────────────�
 print_msg "$CYAN" "✨ Git 자동 커밋 & 푸시 시작합니다 ✨"
 echo "$divider"
 
+# 🎯 Git 설정 상태 점검
+autocrlf_setting=$(git config --get core.autocrlf)
+quotepath_setting=$(git config --get core.quotepath)
+
+if [[ "$autocrlf_setting" != "input" ]]; then
+    echo -e "${YELLOW}⚠️ 현재 Git 설정이 'autocrlf=$autocrlf_setting' 입니다.${NC}"
+    echo -e "${CYAN}👉 줄바꿈 경고(LF/CRLF)를 방지하려면 아래 명령어를 입력하세요:${NC}"
+    echo -e "   ${GREEN}git config --global core.autocrlf input${NC}"
+    echo ""
+fi
+
+if [[ "$quotepath_setting" != "false" ]]; then
+    echo -e "${YELLOW}⚠️ Git이 한글 파일명을 깨진 문자로 표시할 수 있어요.${NC}"
+    echo -e "${CYAN}👉 아래 명령어를 입력하면 한글 파일명을 정상 출력할 수 있어요:${NC}"
+    echo -e "   ${GREEN}git config --global core.quotepath false${NC}"
+    echo ""
+fi
+
 # 🕰 현재 시간 (KST)
 current_time=$(TZ=Asia/Seoul date "+%Y-%m-%d %H:%M")
 
