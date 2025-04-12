@@ -43,8 +43,11 @@ else
 fi
 
 echo "$divider"
-echo -e "${CYAN}🛠 Git 기본 설정이 완료되었습니다!${NC}
-"
+echo -e "${CYAN}🛠 Git 기본 설정이 완료되었습니다!${NC}"
+
+clear
+
+# 📦 Git 자동 커밋 & 푸시 스크립트
 # 🎨 색상 정의
 RED='\033[1;31m'
 GREEN='\033[1;32m'
