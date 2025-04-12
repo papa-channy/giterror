@@ -1,0 +1,22 @@
+📦 1️⃣ git add 단계 에러
+에러 메시지	발생 원인	자동화로 방지 가능 여부
+fatal: pathspec 'xxx' did not match any files	파일 경로 오타	가능 (자동화에선 git add . 사용으로 없음)
+fatal: Not a git repository	현재 디렉토리에 .git이 없음	부분 가능 (자동화 전 체크 가능)
+
+📦 2️⃣ git commit 단계 에러
+에러 메시지	발생 원인	자동화로 방지 가능 여부
+nothing to commit, working tree clean	변경 사항 없음	가능 (자동화 전에 git status -s 확인)
+Aborting commit due to empty commit message.	커밋 메시지 비었음	가능 (자동화에서 기본 메시지 설정 가능)
+error: Committing is not possible because you have unmerged files.	병합 충돌 해결 안됨	불가 (자동화 안에서 병합 상태인지 확인 가능)
+fatal: Unable to create '.../.git/index.lock': File exists.	lock 파일 남아있음	가능 (자동화 시작 전 삭제 가능)
+*** Please tell me who you are.	git config 사용자 정보 없음	가능 (자동화 전에 설정 확인 및 안내 가능)
+
+
+
+📦 3️⃣ git push 단계 에러
+에러 메시지	발생 원인	자동화로 방지 가능 여부
+error: failed to push some refs to ...	원격 브랜치에 변경사항 있음	불가 (자동화 중 git pull --rebase 넣을지 선택 가능)
+Updates were rejected because the remote contains work that you do not have locally	같은 이유	불가
+non-fast-forward	강제 푸시 필요	불가
+fatal: repository 'origin' does not exist	리모트 설정 없음	가능 (자동화 전에 git remote -v 체크 가능)
+fatal: Not a git repository
