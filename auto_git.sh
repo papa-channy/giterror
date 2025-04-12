@@ -126,9 +126,20 @@ print_msg "$BLUE" "🔍 변경된 파일 목록:"
 git status -s
 echo ""
 
-# 📝 커밋 메시지 구성
-commit_message="🚀 [$branch] automatic commit | $current_time (KST) | $os_type"
+# 📝 커밋 메시지 입력 (직접 입력 유도)
+read -p "✏️ 커밋 메시지를 입력하세요 (엔터 누르면 자동 메시지 사용): " user_commit
 
+# 자동 메시지 생성
+default_message="🚀 [$branch] automatic commit | $current_time (KST) | $os_type"
+
+# 입력 여부에 따라 최종 메시지 설정
+if [ -z "$user_commit" ]; then
+    commit_message="$default_message"
+    print_msg "$YELLOW" "ℹ️ 커밋 메시지를 입력하지 않아 자동 메시지를 사용합니다."
+else
+    commit_message="$user_commit"
+    print_msg "$GREEN" "📝 커밋 메시지: $commit_message"
+fi
 # ➕ git add
 git add .
 
