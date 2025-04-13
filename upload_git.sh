@@ -117,13 +117,14 @@ fi
 
 # 5️⃣ 커밋 메시지 입력
 print_msg "$BLUE" "🔍  변경된 파일 목록"; git status -s; echo ""
-read -p "✏️  커밋 메시지를 입력하세요 (엔터 → 자동 메시지): " commit_message
+read -p "✏️   커밋 메시지를 입력하세요 (엔터 → 자동 메시지): " commit_message
 branch=$(git rev-parse --abbrev-ref HEAD)
 timestamp=$(TZ=Asia/Seoul date "+%Y-%m-%d %H:%M")
 os_type=$(uname)
 default_message="🚀  [$branch] auto commit | $timestamp | $os_type"
 commit_message="${commit_message:-$default_message}"
 
+clear
 # 6️⃣ 커밋 실행
 git add .
 commit_output=$(git commit -m "$commit_message" 2>&1)
@@ -205,5 +206,6 @@ fi
 
 # 🎉 종료 메시지
 print_msg "$GREEN" "✅  모든 작업이 성공적으로 완료되었습니다!"
+print_msg "$CYAN" "✏️   커밋 메시지: $commit_message"
 print_msg "$CYAN" "🌈  잘 반영되었어요. 수고했어요 ! ☕"
 echo ""
