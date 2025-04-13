@@ -39,7 +39,7 @@ save_commit_log() {
 }
 
 # 1️⃣ Git 설정 자동 적용
-print_msg "$CYAN" "1️⃣ Git 설정 점검 및 자동 적용 중..."
+print_msg "$CYAN" "1️⃣   Git 설정 점검 및 자동 적용 중..."
 autocrlf=$(git config --global core.autocrlf)
 [[ "$autocrlf" != "input" ]] && git config --global core.autocrlf input && echo "✅ core.autocrlf = input 설정 완료"
 quotepath=$(git config --global core.quotepath)
@@ -58,7 +58,7 @@ else
 fi
 
 # 2️⃣ CRLF/LF 문제 예방 설정 파일 생성
-print_msg "$CYAN" "2️⃣ CRLF/LF 방지용 설정 파일 생성 중..."
+print_msg "$CYAN" "2️⃣   CRLF/LF 방지용 설정 파일 생성 중..."
 if [[ ! -f .gitattributes ]]; then
   echo "* text=auto" > .gitattributes
   echo "✅ .gitattributes 파일 생성 완료"
@@ -72,6 +72,12 @@ insert_final_newline = true
 charset = utf-8
 EOL
   echo "✅ .editorconfig 파일 생성 완료"
+fi
+
+# ✨ .gitignore 줄바꿈 정리 (CRLF → LF)
+if command -v dos2unix &> /dev/null; then
+  dos2unix .gitignore 2>/dev/null
+  echo "✅ .gitignore 줄바꿈(LF) 정리 완료"
 fi
 
 # 🧾 커밋 로그 파일 생성 및 .gitignore 등록
@@ -89,14 +95,14 @@ elif ! grep -q ".git_commit_log.txt" .gitignore; then
 fi
 
 # 3️⃣ Git 저장소 확인
-print_msg "$CYAN" "3️⃣ 현재 위치 확인 중..."
+print_msg "$CYAN" "3️⃣   현재 위치 확인 중..."
 git rev-parse --is-inside-work-tree &>/dev/null || {
   handle_error "현재 디렉토리에 Git 저장소가 없어요!" "git init 또는 git clone <URL> 후 다시 실행해 주세요."
   exit 1
 }
 
 # 4️⃣ 변경사항 확인 및 병합 충돌 검사
-[[ -z "$(git status -s)" ]] && print_msg "$GREEN" "✅ 변경된 파일이 없어요!" && exit 0
+[[ -z "$(git status -s)" ]] && print_msg "$GREEN" "✅  변경된 파일이 없어요!" && exit 0
 
 if git ls-files -u | grep . &>/dev/null; then
   handle_error "병합 충돌이 감지되었어요!" "충돌 파일을 수정하고 git add 후 다시 실행하세요."
@@ -105,17 +111,17 @@ fi
 
 if [[ -f ".git/index.lock" ]]; then
   show_solution "index.lock 파일이 남아있어요" \
-    "1️⃣ 삭제: rm -f .git/index.lock" "2️⃣ 다시 실행해 주세요."
+    "1️⃣  삭제: rm -f .git/index.lock" "2️⃣  다시 실행해 주세요."
   exit 1
 fi
 
 # 5️⃣ 커밋 메시지 입력
-print_msg "$BLUE" "🔍 변경된 파일 목록"; git status -s; echo ""
-read -p "✏️ 커밋 메시지를 입력하세요 (엔터 → 자동 메시지): " commit_message
+print_msg "$BLUE" "🔍  변경된 파일 목록"; git status -s; echo ""
+read -p "✏️  커밋 메시지를 입력하세요 (엔터 → 자동 메시지): " commit_message
 branch=$(git rev-parse --abbrev-ref HEAD)
 timestamp=$(TZ=Asia/Seoul date "+%Y-%m-%d %H:%M")
 os_type=$(uname)
-default_message="🚀 [$branch] auto commit | $timestamp | $os_type"
+default_message="🚀  [$branch] auto commit | $timestamp | $os_type"
 commit_message="${commit_message:-$default_message}"
 
 # 6️⃣ 커밋 실행
@@ -129,36 +135,36 @@ if [ $commit_status -ne 0 ]; then
 
     if echo "$commit_output" | grep -q "Permission denied"; then
         show_solution "파일 시스템 권한 문제" \
-            "1️⃣ 파일이 현재 사용자 계정 소유인지 확인: ${CYAN}ls -l${NC}" \
-            "2️⃣ 필요시 소유권 변경: ${CYAN}sudo chown -R 사용자명 .${NC}" \
-            "3️⃣ 다시 실행해 주세요."
+            "1️⃣  파일이 현재 사용자 계정 소유인지 확인: ${CYAN}ls -l${NC}" \
+            "2️⃣  필요시 소유권 변경: ${CYAN}sudo chown -R 사용자명 .${NC}" \
+            "3️⃣  다시 실행해 주세요."
     elif echo "$commit_output" | grep -q "unable to write new index file"; then
         show_solution "디스크 쓰기 오류" \
-            "1️⃣ 디스크 용량 확인: ${CYAN}df -h${NC}" \
-            "2️⃣ 권한 문제일 수도 있으니 권한 확인"
+            "1️⃣  디스크 용량 확인: ${CYAN}df -h${NC}" \
+            "2️⃣  권한 문제일 수도 있으니 권한 확인"
     elif echo "$commit_output" | grep -q "Unable to create '.git/index.lock'"; then
         show_solution "다른 Git 작업이 충돌 중이에요." \
-            "1️⃣ lock 파일 삭제: ${CYAN}rm -f .git/index.lock${NC}" \
-            "2️⃣ 이후 다시 시도해 주세요."
+            "1️⃣  lock 파일 삭제: ${CYAN}rm -f .git/index.lock${NC}" \
+            "2️⃣  이후 다시 시도해 주세요."
     elif echo "$commit_output" | grep -q "fatal:"; then
         show_solution "치명적인 Git 오류(fatal)가 발생했어요." \
-            "1️⃣ 위 로그를 확인해 주세요." \
-            "2️⃣ 필요한 경우 터미널에 직접 명령을 실행해 원인을 파악해 주세요."
+            "1️⃣  위 로그를 확인해 주세요." \
+            "2️⃣  필요한 경우 터미널에 직접 명령을 실행해 원인을 파악해 주세요."
     else
-        print_msg "$YELLOW" "📢 예상치 못한 커밋 오류입니다. 위 로그를 확인해 주세요."
+        print_msg "$YELLOW" "📢  예상치 못한 커밋 오류입니다. 위 로그를 확인해 주세요."
     fi
     exit 1
 fi
 
-save_commit_log "✅ 성공"
+save_commit_log "✅  성공"
 
 # 🌐 원격 저장소 확인
 remote_url=$(git config --get remote.origin.url)
 if [ -z "$remote_url" ]; then
     print_msg "$RED" "❌ 원격 저장소(remote.origin.url)가 설정되어 있지 않아요!"
     show_solution "Push를 하려면 원격 저장소 주소가 필요해요." \
-        "1️⃣ 원격 저장소 추가: ${CYAN}git remote add origin <URL>${NC}" \
-        "2️⃣ 또는 설정 확인: ${CYAN}git remote -v${NC}"
+        "1️⃣  원격 저장소 추가: ${CYAN}git remote add origin <URL>${NC}" \
+        "2️⃣  또는 설정 확인: ${CYAN}git remote -v${NC}"
     exit 1
 fi
 
@@ -166,9 +172,9 @@ fi
 if ! git ls-remote "$remote_url" &> /dev/null; then
     print_msg "$RED" "❌ 원격 저장소에 연결할 수 없어요."
     show_solution "네트워크 또는 인증 문제일 수 있어요." \
-        "1️⃣ 인터넷 연결 확인" \
-        "2️⃣ remote URL 확인: ${CYAN}git remote -v${NC}" \
-        "3️⃣ 인증 토큰 또는 SSH 키 확인"
+        "1️⃣  인터넷 연결 확인" \
+        "2️⃣  remote URL 확인: ${CYAN}git remote -v${NC}" \
+        "3️⃣  인증 토큰 또는 SSH 키 확인"
     exit 1
 fi
 
@@ -181,16 +187,16 @@ if [ $push_status -ne 0 ]; then
 
     if echo "$push_output" | grep -qi "permission denied"; then
         show_solution "원격 저장소에 푸시 권한이 없어요." \
-            "1️⃣ 계정 권한 확인" \
-            "2️⃣ SSH 키 또는 Personal Access Token 설정 확인"
+            "1️⃣  계정 권한 확인" \
+            "2️⃣  SSH 키 또는 Personal Access Token 설정 확인"
     elif echo "$push_output" | grep -qi "Could not resolve host"; then
         show_solution "원격 저장소 주소를 찾을 수 없어요." \
-            "1️⃣ 인터넷 연결 확인" \
-            "2️⃣ DNS 설정 또는 오타 확인"
+            "1️⃣  인터넷 연결 확인" \
+            "2️⃣  DNS 설정 또는 오타 확인"
     elif echo "$push_output" | grep -qi "failed to connect to"; then
         show_solution "네트워크 연결에 실패했어요." \
-            "1️⃣ VPN/방화벽 확인" \
-            "2️⃣ Git 서버 접근 차단 여부 확인"
+            "1️⃣  VPN/방화벽 확인" \
+            "2️⃣  Git 서버 접근 차단 여부 확인"
     else
         print_msg "$YELLOW" "📢 예상치 못한 푸시 오류입니다. 위 로그를 참고해 주세요."
     fi
@@ -198,6 +204,6 @@ if [ $push_status -ne 0 ]; then
 fi
 
 # 🎉 종료 메시지
-print_msg "$GREEN" "✅ 모든 작업이 성공적으로 완료되었습니다!"
-print_msg "$CYAN" "🌈 잘 반영되었어요. 수고했어요 ! ☕"
+print_msg "$GREEN" "✅  모든 작업이 성공적으로 완료되었습니다!"
+print_msg "$CYAN" "🌈  잘 반영되었어요. 수고했어요 ! ☕"
 echo ""
